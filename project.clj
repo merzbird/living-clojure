@@ -2,14 +2,15 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.6.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.5.0"]
                  [org.clojure/clojurescript "1.10.520"]
                  [cljs-http "0.1.46"]
                  [org.clojure/core.async "0.4.500"]
-                 [enfocus "2.1.0"]]
+                 [enfocus "2.1.0"]
+                 [hiccup "1.0.5"]]
   :plugins [
             [lein-ring "0.12.5"]
             [lein-cljsbuild "1.1.7"]]
