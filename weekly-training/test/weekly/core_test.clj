@@ -70,16 +70,43 @@
     false)
   )
 
-;; TODO
 (defn symmetric-tree?
-  [c]
-  (if (and (sequential? c) (= 3 (count c)))
-    (let [[n [:as l] [:as r]] c]
-      (println (str "c " c " n " n " l " l " r " r))
-      (if (and (not (nil? n)) (or (nil? l) (tree? l)) (or (nil? r) (tree? r))) true false)
-      )
-    false)
+  [[n [:as l] [:as r]]]
+  (let [mirror? (fn mirror? [a b]
+                  (cond
+                    (not= (sequential? a) (sequential? b)) false
+                    (sequential? a) (let [[ra La Ra] a
+                                          [rb Lb Rb] b]
+                                      (and (= ra rb) (mirror? La Rb) (mirror? Lb Ra)))
+                    :else (= a b)))]
+    (mirror? l r))
   )
+
+(defn flip
+  [f]
+  (fn [& args] (apply f (reverse args)))
+  )
+
+(defn rotate
+  [n seq]
+  (let [cnt (count seq)]
+    (take cnt (drop (mod n cnt) (concat seq seq))))
+  )
+
+(defn reverse-interleave
+  [seq n]
+  (reduce (fn [seqs vals] (map conj seqs vals)) (repeat n []) (partition n seq))
+  )
+
+(defn primes
+  [n]
+  (cons
+    2
+    (let [is-prime (fn [x] (every? #(not= 0 (rem x %)) (range 2 (inc (Math/sqrt x)))))
+          iter (iterate #(+ 2 %) 3)]
+      (take (dec n) (filter is-prime iter))))
+  )
+
 (deftest week2
   (testing "exercises"
     ;; week2
@@ -112,4 +139,17 @@
              [1 [2 nil [3 [4 [5 nil nil] [6 nil nil]] nil]]
                 [2 [3 nil [4 [6 nil nil] [5 nil nil]]] nil]])
            true))
+
+    (is (= 3 ((flip nth) 2 [1 2 3 4 5])))
+    (is (= [1 2 3] ((flip take) [1 2 3 4 5] 3)))
+
+    (is (= (rotate 2 [1 2 3 4 5]) '(3 4 5 1 2)))
+    (is (= (rotate -2 [1 2 3 4 5]) '(4 5 1 2 3)))
+    (is (= (rotate 1 '(:a :b :c)) '(:b :c :a)))
+
+    (is (= (reverse-interleave [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6))))
+    (is (= (reverse-interleave (range 9) 3) '((0 3 6) (1 4 7) (2 5 8))))
+
+    (is (= (primes 5) [2 3 5 7 11]))
+    (is (= (last (primes 100)) 541))
     ))
